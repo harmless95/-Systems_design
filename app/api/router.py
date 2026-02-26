@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from app.api.Dependencies import handler
 from app.core.model import TelegramData
 
 router_app = APIRouter()
@@ -16,5 +17,6 @@ async def new_message_docs(body: TelegramData):
 
 @router_app.post("/webhook")
 async def new_message(body: TelegramData):
+    result = await handler()
     print(f"Name: {body.username}, message: {body.message}")
     return {"status": "ok", "delivered": True}
