@@ -1,0 +1,47 @@
+services:
+  db_systems:
+    image: postgres:latest
+    container_name: db_systems
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    networks:
+      - net_system
+
+  app_system:
+    build:
+      dockerfile: Docker_builds/FastAPI_Docker/Dockerfile
+      context: .
+    container_name: app_system
+    env_file:
+      - app/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db_systems
+    networks:
+      net_system:
+
+  tg_system:
+    build:
+      dockerfile: Docker_builds/TG_Docker/Dockerfile
+      context: .
+    container_name: tg_system
+    env_file:
+      - TG_project/.env
+    depends_on:
+      - db_systems
+      - app_system
+    networks:
+      net_system:
+
+
+networks:
+  net_system:
+    driver: bridge
+
+volumes:
+  postgres_data:
