@@ -1,30 +1,29 @@
 import asyncio
 import os
 import logging
-
-from aiogram import Bot, Dispatcher
-from aiogram.filters import CommandStart
-from aiogram.types import Message
+import httpx
 
 TG_TOKEN = os.getenv("TG_TOKEN")
 URL_APP = os.getenv("URL_APP")
+URL_TG = f"https://api.telegram.org/bot{TG_TOKEN}/setWebhook"
+WEBHOOK_URL = f"{URL_APP}/webhook"
 
 logger = logging.getLogger("TG_app")
 
-bot = Bot(token=TG_TOKEN)
-dp = Dispatcher()
 
-
-@dp.message(CommandStart())
-async def command_start(message: Message):
-    await message.answer(
-        f"Привет, <b>{message.from_user.full_name}</b>!",
-        parse_mode="HTML",
-    )
+async def set_webhook():
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(f"{URL_TG}?url={WEBHOOK_URL}")
+            if response.status_code == 200:
+                data = response.json()
+                logger.info(f"Message: %s", data)
+    except Exception as ex:
+        logger.error("Error: %s", ex)
 
 
 async def main():
-    await dp.start_polling(bot)
+    await set_webhook()
 
 
 if __name__ == "__main__":
