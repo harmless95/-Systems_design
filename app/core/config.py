@@ -6,12 +6,8 @@ from pydantic import BaseModel, PostgresDsn
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-class TelegramBot(BaseModel):
-    token: str
-
-
 class AIAssistant(BaseModel):
-    token_AI: str
+    token: str
 
 
 class PostgresDB(BaseModel):
@@ -40,7 +36,6 @@ class Setting(BaseSettings):
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
     )
-    t_bot: TelegramBot
     db: PostgresDB
     ai_bot: AIAssistant
 
