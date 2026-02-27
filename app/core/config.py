@@ -12,6 +12,7 @@ class AIAssistant(BaseModel):
 
 class PostgresDB(BaseModel):
     url: PostgresDsn
+    url_app: PostgresDsn
     echo: bool = False
     echo_pool: bool = False
     pool_size: int = 50

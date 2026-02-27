@@ -1,7 +1,7 @@
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-from app.core.config import setting
+from core.config import setting
 
 
 class HelperDB:
@@ -37,7 +37,7 @@ class HelperDB:
 
 
 helper_db = HelperDB(
-    url=str(setting.db.url),
+    url=str(setting.db.url_app),
     echo=setting.db.echo,
     echo_pool=setting.db.echo_pool,
     pool_size=setting.db.pool_size,
