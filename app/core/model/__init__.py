@@ -1,3 +1,8 @@
-__all__ = ("TelegramData",)
+__all__ = (
+    "TelegramData",
+    # "Base",
+)
 
-from .telegram import TelegramData
+from .telegram_schema import TelegramData
+
+# from .Base import Base
