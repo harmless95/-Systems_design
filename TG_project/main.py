@@ -39,13 +39,22 @@ async def get_redis(bot: Bot):
                 data_app = json.loads(message["data"])
                 logger.info("Result app: %s", data_app)
                 chat_id = data_app.get("chat_id")
-                if chat_id:
-                    await bot.send_message(
-                        chat_id,
-                        f"Результат из Redis: {data_app}",
+                if not chat_id:
+                    continue
+                id_data = data_app.get("id")
+                message_data = data_app.get("message")
+                if isinstance(message_data, (dict, list)):
+                    message_data = json.dumps(
+                        message_data, ensure_ascii=False, indent=2
                     )
+                text = (
+                    f"<b>Данные успешно сохранены</b>\n\n"
+                    f"<b>ID записи:</b> <code>{id_data}</code>\n"
+                    f"<b>Содержимое:</b>\n<pre>{message_data}</pre>"
+                )
+                await bot.send_message(chat_id, text, parse_mode="HTML")
     except Exception as e:
-        logger.error(f"⚠️ Ошибка Redis: {e}")
+        logger.error(f"Ошибка Redis: {e}")
     finally:
         await pubsub.unsubscribe(redis_channel)
     await asyncio.sleep(0.1)
