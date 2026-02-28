@@ -1,9 +1,16 @@
 from pathlib import Path
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, PostgresDsn
 
+from core.log_settings import setup_logger
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# fmt: off
+LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+# fmt: on
 
 
 class AIAssistant(BaseModel):
@@ -27,6 +34,18 @@ class PostgresDB(BaseModel):
     }
 
 
+class LoggingConfig(BaseModel):
+    log_level: Literal[
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL",
+    ] = "WARNING"
+    log_format: str = LOG_DEFAULT_FORMAT
+    log_file: str = BASE_DIR / "data_logs/error_logs.log"
+
+
 class Setting(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(
@@ -39,6 +58,13 @@ class Setting(BaseSettings):
     )
     db: PostgresDB
     ai_bot: AIAssistant
+    log: LoggingConfig = LoggingConfig()
 
 
 setting = Setting()
+
+logger = setup_logger(
+    log_level=setting.log.log_level,
+    log_file=setting.log.log_file,
+    log_format=setting.log.log_format,
+)

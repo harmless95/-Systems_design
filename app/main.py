@@ -1,9 +1,10 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from contextlib import asynccontextmanager
 
 from api.router import router_app
 from core.model import helper_db
+from core.config import logger
 
 
 @asynccontextmanager
@@ -18,8 +19,12 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(router=router_app)
 
 
-@app.get("/")
+@app.get(
+    "/",
+    status_code=status.HTTP_200_OK,
+)
 async def get_hello() -> dict[str, str]:
+    logger.info("Start APP Hello")
     return {
         "message": "Hello",
     }

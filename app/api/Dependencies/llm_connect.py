@@ -1,9 +1,6 @@
-import logging
 from openai import AsyncOpenAI
 
-from core.config import setting
-
-logger = logging.getLogger(__name__)
+from core.config import setting, logger
 
 
 async def conn_client():
@@ -13,7 +10,7 @@ async def conn_client():
             api_key=setting.ai_bot.token,
             base_url="https://api.groq.com/openai/v1",
         )
-        logger.info("✅ Groq клиент инициализирован")
+        logger.info("Groq клиент инициализирован")
     except Exception as e:
-        logger.error(f"❌ Ошибка инициализации Groq: {e}")
+        logger.error(f"Ошибка инициализации Groq: {e}")
     return client

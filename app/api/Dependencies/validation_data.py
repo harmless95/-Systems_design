@@ -1,9 +1,7 @@
-import logging
-
-from core.model import TelegramData
 from pydantic import ValidationError
 
-logger = logging.getLogger("ValidationData")
+from core.config import logger
+from core.model import TelegramData
 
 
 async def check_valid(data: dict):

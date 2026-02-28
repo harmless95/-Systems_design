@@ -1,9 +1,7 @@
 import json
-import logging
 
 from api.Dependencies.promt_llm import PROMPT
-
-logger = logging.getLogger("HandlerLLM")
+from core.config import logger
 
 
 async def handler(data: dict, client) -> dict:
