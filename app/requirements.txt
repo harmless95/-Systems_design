@@ -5,3 +5,5 @@ openai==2.24.0
 redis==7.2.1
 SQLAlchemy==2.0.47
 asyncpg==0.31.0
+taskiq==0.12.1
+taskiq-redis==1.2.2

@@ -45,6 +45,18 @@ services:
     networks:
       - net_system
 
+  worker:
+    build:
+      dockerfile: Docker_builds/FastAPI_Docker/Dockerfile
+      context: .
+    entrypoint: taskiq worker api.Dependencies.tasks_background:broker
+    env_file:
+      - app/.env
+    depends_on:
+      - db_systems
+      - redis
+    networks:
+      - net_system
 
 networks:
   net_system:
