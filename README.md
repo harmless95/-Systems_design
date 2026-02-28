@@ -30,21 +30,24 @@ cd -Systems_design
 2. Настройка окружения (.env)
 В корне проекта или в соответствующих папках сервисов:
 env
-
+```
 # --- PostgreSQL (Docker) ---
 - POSTGRES_USER=user
 - POSTGRES_PASSWORD=password
 - POSTGRES_DB=db
-
+```
+```
 # --- FastAPI Service ---
 - APP_CONFIG__DB__URL=postgresql+asyncpg://user:password@db_systems:5432/db
 - APP_CONFIG__AI_BOT__TOKEN_AI=your_llm_api_key
 - APP_CONFIG__REDIS__HOST=redis
-
+```
+```
 # --- Telegram Bot Service ---
 - TG_TOKEN=your_telegram_token
 - URL_APP=http://app_system:8000/webhook
 - REDIS_HOST=redis
+```
 Используйте код с осторожностью.
 
 3. Запуск через Docker (рекомендуется)
