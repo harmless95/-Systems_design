@@ -39,6 +39,12 @@ services:
     networks:
       net_system:
 
+  redis:
+    image: redis:7-alpine
+    restart: always
+    networks:
+      - net_system
+
 
 networks:
   net_system:

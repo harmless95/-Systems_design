@@ -13,6 +13,10 @@ LOG_DEFAULT_FORMAT = "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(leve
 # fmt: on
 
 
+class Redis(BaseModel):
+    host: str
+
+
 class AIAssistant(BaseModel):
     token: str
 
@@ -58,6 +62,7 @@ class Setting(BaseSettings):
     )
     db: PostgresDB
     ai_bot: AIAssistant
+    redis: Redis
     log: LoggingConfig = LoggingConfig()
 
 

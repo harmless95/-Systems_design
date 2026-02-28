@@ -1,7 +1,9 @@
 import asyncio
+import json
 import os
 import httpx
 import logging
+import redis.asyncio as redis
 
 from aiogram import Bot, Dispatcher, F
 from aiogram.filters import CommandStart
@@ -15,6 +17,39 @@ URL_APP = os.getenv("URL_APP")
 bot = Bot(token=TG_TOKEN)
 dp = Dispatcher()
 
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+redis_channel = "tasks_llm"
+redis_client = redis.Redis(
+    host=REDIS_HOST,
+    port=6379,
+    decode_responses=True,
+)
+
+
+async def get_redis(bot: Bot):
+    pubsub = redis_client.pubsub()
+    await pubsub.subscribe(redis_channel)
+    logger.info(f"Subscribed to {redis_channel}")
+
+    try:
+        async for message in pubsub.listen():
+            logger.info(f"Raw message from Redis: {message}")
+            if message["type"] == "message":
+
+                data_app = json.loads(message["data"])
+                logger.info("Result app: %s", data_app)
+                chat_id = data_app.get("chat_id")
+                if chat_id:
+                    await bot.send_message(
+                        chat_id,
+                        f"Результат из Redis: {data_app}",
+                    )
+    except Exception as e:
+        logger.error(f"⚠️ Ошибка Redis: {e}")
+    finally:
+        await pubsub.unsubscribe(redis_channel)
+    await asyncio.sleep(0.1)
+
 
 async def handler_message(message: Message):
 
@@ -24,7 +59,7 @@ async def handler_message(message: Message):
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(url=URL_APP, json=data_json)
             logger.error("Resp: %s", response)
-            if response.status_code == 200:
+            if response.status_code == 202:
                 return "Сообщение обработанно"
 
             logger.warning("API Error %s: %s", response.status_code, response.text)
@@ -53,8 +88,16 @@ async def message_text(message: Message):
 
 
 async def main():
-    await dp.start_polling(bot)
+    redis_tasks = asyncio.create_task(get_redis(bot))
+    try:
+        await dp.start_polling(bot)
+    finally:
+        redis_tasks.cancel()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    logging.basicConfig(level=logging.INFO)
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        logger.info("Bot stopped")
